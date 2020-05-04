@@ -29,7 +29,7 @@ func InitialMigration() {
 	db.AutoMigrate(&User{})
 }
 
-
+// Exported for use in user.go
 func AllUsers(w http.ResponseWriter, r *http.Request) {
 	db, err = gorm.Open("sqlite3", "test.db") 
 		if err != nil {
@@ -41,6 +41,8 @@ func AllUsers(w http.ResponseWriter, r *http.Request) {
 	db.Find(&users)
 	json.NewEncoder(w).Encode(users)
 }
+
+// Exported for use in user.go
 func NewUser(w http.ResponseWriter, r *http.Request) {
 	db, err = gorm.Open("sqlite3", "test.db")
 	if err != nil {
@@ -57,11 +59,43 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "new user Succussfully created")
 
 }
-
+// Exported for use in user.go
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Delete user endpoint hit")
+	db, err = gorm.Open("sqlite3", "test.db")
+	if err != nil {
+		panic("Could not connect to db")
+	}
+	defer db.Close()
+
+	vars := mux.Vars(r)
+	name := vars["name"]
+
+	var user User 
+	db.Where("name = ?", name).Find(&user)
+	db.Delete(&user)
+
+	fmt.Fprintf(w, "User Succussfully deleted")
 }
 
+// UpdateUser exported for use in user.go
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Update user endpoint hit")
+	db, err = gorm.Open("sqlite3", "test.db")
+	if err != nil {
+		panic("Could not connect to db")
+	}
+	defer db.Close()
+
+	vars := mux.Vars(r)
+	name := vars["name"]
+	email := vars["email"]
+
+	var user User 
+	db.Where("name = ?", name).Find(&user)
+
+	user.Email = email
+
+	db.Save(user)
+	fmt.Fprintf(w, "User Succussfully updated")
+
+
 }

@@ -1,5 +1,17 @@
 
+
 GET http://localhost:8081/users
+
+PUT http://localhost:8081/user/ben/diff@email.com
+
+
+POST http://localhost:8081/user/ben/myemail@email.com
+
+
+
+DELETE http://localhost:8081/deleteUser/ben
+
+
 
 
 
